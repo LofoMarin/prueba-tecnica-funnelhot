@@ -1,56 +1,56 @@
 # Módulo de Gestión de Asistentes IA - Funnelhot
 
-Aplicación web responsive para crear, listar, editar, eliminar y entrenar asistentes de IA, con gestión profesional de estado.
+Aplicación web responsive para crear, listar, editar, eliminar y entrenar asistentes de IA con gestión profesional de estado.
 
 ## 🚀 Características Implementadas
 
-### Funcionalidad Principal
-- ✅ **Página Principal**: Listado de asistentes en tarjetas con información detallada
-- ✅ **Modal 2 Pasos**: Creación y edición de asistentes con validaciones
-- ✅ **Página de Entrenamiento**: Configuración de reglas y chat simulado
-- ✅ **Gesión de Eliminación**: Confirmación y feedback visual
-- ✅ **Estados de Carga**: Loading, error handling y optimistic updates
+### ✅ Funcionalidad Principal
+- **Página Principal**: Listado de asistentes en tarjetas con información detallada
+- **Modal 2 Pasos**: Creación y edición de asistentes con validaciones en tiempo real
+- **Página de Entrenamiento**: Configuración de reglas y chat simulado
+- **Gestión de Eliminación**: Confirmación y feedback visual
+- **Estados de Carga**: Loading, error handling y optimistic updates
+- **Tema Oscuro/Claro**: Toggle de tema con persistencia
 
-### Funcionalidades por Sección
+### 📋 Secciones Implementadas
 
 #### 1. Página Principal (`/`)
-- Listado de asistentes en tarjetas con:
-  - Nombre, idioma y tono
-  - Visualización de distribución de respuestas (gráfico de barras)
-  - Estado de audio (habilitado/deshabilitado)
-  - Menú desplegable de acciones (Editar, Eliminar)
-  - Botón "Entrenar" con link a página de training
-- Estado vacío con llamada a la acción
-- Botón "Crear Asistente" flotante
-- Loading skeletons durante la carga
+- Listado responsive de asistentes en tarjetas
+- Información: Nombre, idioma, tono, estado de audio
+- Gráfico de distribución de respuestas (cortas, medias, largas)
+- Menú de acciones (Editar, Eliminar, Entrenar)
+- Estado vacío con CTA
+- Botón flotante "Crear Asistente"
+- Skeletons durante carga
 
 #### 2. Modal de Creación/Edición
 **Paso 1: Datos Básicos**
 - Nombre (validado: 3+ caracteres)
 - Idioma (Español, Inglés, Portugués)
 - Tono (Formal, Casual, Profesional, Amigable)
-- Validaciones en tiempo real con mensajes de error
+- Validaciones en tiempo real con mensajes claros
 
-**Paso 2: Configuración de Respuestas**
-- Sliders para ajustar porcentaje de respuestas (Cortas, Medias, Largas)
-- Validación: suma debe ser exactamente 100%
-- Checkbox para habilitar respuestas de audio
+**Paso 2: Configuración**
+- Sliders para porcentaje de respuestas
+- Validación: suma debe ser 100%
+- Checkbox para audio
 - Indicador visual del paso actual
+- Navegación: Atrás/Guardar
 
 #### 3. Página de Entrenamiento (`/asistant/[id]`)
 **Sección de Entrenamiento**
-- Área de texto para ingresar prompts/instrucciones
+- Área de texto para prompts/instrucciones
 - Botón "Guardar" con estado de carga
-- Mensajes de éxito/error con toast
+- Toasts de éxito/error
 - Persistencia en sesión
 
 **Chat Simulado**
-- Interfaz de chat limpia con mensajes del usuario (derecha, azul) y asistente (izquierda, gris)
-- Área de scroll con indicador de "escribiendo"
-- Input para enviar mensajes
-- Botón "Reiniciar" para limpiar conversación
-- Respuestas simuladas con delay 1-2 segundos
-- Respuestas aleatorias de un JSON predefinido
+- Interfaz limpia con mensajes diferenciados
+- Delay 1-2 segundos en respuestas
+- Respuestas aleatorias del JSON
+- Indicador "escribiendo"
+- Input para mensajes
+- Botón "Reiniciar" conversación
 
 ## 🛠 Stack Técnico
 

@@ -29,10 +29,28 @@ import { useAssistantStore } from "@/lib/store"
 import { assistantService } from "@/lib/services"
 import type { CreateAssistantInput, ResponseLength } from "@/lib/types"
 
+/**
+ * 🪟 MODAL DE CREACIÓN/EDICIÓN DE ASISTENTES
+ * 
+ * Este componente es un poco complejo porque:
+ * - Tiene 2 pasos (datos básicos + configuración)
+ * - Valida en tiempo real mientras escribes
+ * - Usa React Query para las mutaciones (crear/editar)
+ * - Maneja errores y muestra toasts
+ * 
+ * Flujo:
+ * 1. Usuario clickea "Crear Asistente" o "Editar"
+ * 2. Se abre este modal
+ * 3. Paso 1: Rellena nombre, idioma, tono
+ * 4. Paso 2: Ajusta porcentajes de respuestas
+ * 5. Click "Guardar" -> Mutation -> Toast de éxito
+ */
+
 export function AssistantModal() {
   const queryClient = useQueryClient()
   const { isModalOpen, closeModal, modalMode, editingAssistant } = useAssistantStore()
 
+  // Estado del formulario
   const [step, setStep] = useState<1 | 2>(1)
   const [formData, setFormData] = useState<CreateAssistantInput>({
     name: "",
@@ -43,9 +61,14 @@ export function AssistantModal() {
     rules: "",
   })
 
+  // Errores de validación que mostraremos al usuario
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Initialize form data when modal opens or editing assistant changes
+  /**
+   * 🔄 Cuando el modal se abre, inicializamos el formulario
+   * Si es edición, llenamos con los datos del asistente
+   * Si es creación, formulario vacío
+   */
   useEffect(() => {
     if (isModalOpen) {
       if (modalMode === "edit" && editingAssistant) {
@@ -72,7 +95,10 @@ export function AssistantModal() {
     }
   }, [isModalOpen, modalMode, editingAssistant])
 
-  // Create mutation
+  /**
+   * ✨ CREACIÓN - Mutation para crear un asistente nuevo
+   * React Query maneja el loading, errores, y actualiza la cache automáticamente
+   */
   const createMutation = useMutation({
     mutationFn: (data: CreateAssistantInput) => assistantService.create(data),
     onSuccess: () => {
@@ -89,7 +115,9 @@ export function AssistantModal() {
     },
   })
 
-  // Update mutation
+  /**
+   * ✏️ ACTUALIZACIÓN - Mutation para editar un asistente existente
+   */
   const updateMutation = useMutation({
     mutationFn: (data: CreateAssistantInput) =>
       assistantService.update(editingAssistant!.id, data),
@@ -108,6 +136,11 @@ export function AssistantModal() {
     },
   })
 
+  /**
+   * ✅ VALIDAR PASO 1
+   * - Nombre requerido
+   * - Nombre mínimo 3 caracteres
+   */
   const validateStep1 = (): boolean => {
     const newErrors: Record<string, string> = {}
 
@@ -121,6 +154,11 @@ export function AssistantModal() {
     return Object.keys(newErrors).length === 0
   }
 
+  /**
+   * ✅ VALIDAR PASO 2
+   * - La suma de porcentajes DEBE ser exactamente 100%
+   * (Esta es la validación más importante del formulario)
+   */
   const validateStep2 = (): boolean => {
     const newErrors: Record<string, string> = {}
     const total = formData.responseLength.short + formData.responseLength.medium + formData.responseLength.long
@@ -133,17 +171,29 @@ export function AssistantModal() {
     return Object.keys(newErrors).length === 0
   }
 
+  /**
+   * ➡️ Avanzar al paso 2
+   * Solo si el paso 1 es válido
+   */
   const handleNext = () => {
     if (validateStep1()) {
       setStep(2)
     }
   }
 
+  /**
+   * ⬅️ Volver al paso 1
+   * Limpiamos errores cuando volvemos
+   */
   const handleBack = () => {
     setStep(1)
     setErrors({})
   }
 
+  /**
+   * 💾 Guardar el asistente
+   * Valida paso 2, luego llama a la mutation correspondiente
+   */
   const handleSave = () => {
     if (validateStep2()) {
       if (modalMode === "create") {
@@ -154,6 +204,10 @@ export function AssistantModal() {
     }
   }
 
+  /**
+   * 🎚️ Actualizar los sliders de porcentajes
+   * Mantiene cada valor entre 0 y 100
+   */
   const updateResponseLength = (key: keyof ResponseLength, value: number) => {
     setFormData((prev) => ({
       ...prev,

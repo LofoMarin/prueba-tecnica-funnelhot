@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -20,6 +19,26 @@ import { useAssistantStore } from "@/lib/store"
 import type { ChatMessage } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+/**
+ * 🎓 PÁGINA DE ENTRENAMIENTO
+ * 
+ * Ruta: /asistant/[id]
+ * 
+ * Esta página tiene dos secciones lado a lado:
+ * 
+ * 1. LEFT: 📝 Entrenamiento
+ *    - Textarea donde escribimos las instrucciones (rules)
+ *    - Botón GUARDAR
+ *    - Las instrucciones se persisten en Zustand mientras está abierta
+ * 
+ * 2. RIGHT: 💬 Chat Simulado
+ *    - Interfaz de chat simple
+ *    - Escribes un mensaje, presionas Enter
+ *    - El asistente responde con delay de 1-2 segundos
+ *    - Las respuestas vienen de un array predefinido
+ *    - Indicador "escribiendo" mientras esperas respuesta
+ */
+
 export default function TrainingPage() {
   const params = useParams()
   const id = params.id as string
@@ -27,35 +46,52 @@ export default function TrainingPage() {
   const queryClient = useQueryClient()
   const chatEndRef = useRef<HTMLDivElement>(null)
 
+  // 💾 Estado global del chat
   const { chatMessages, addChatMessage, clearChatMessages } = useAssistantStore()
   const messages = chatMessages[id] || []
 
-  const [rules, setRules] = useState("")
-  const [messageInput, setMessageInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
+  // 📝 Estado local del formulario
+  const [rules, setRules] = useState("")           // Las instrucciones actuales
+  const [messageInput, setMessageInput] = useState("")  // El mensaje que estás escribiendo
+  const [isTyping, setIsTyping] = useState(false)  // ¿Está el asistente escribiendo?
 
-  // Fetch assistant data
+  /**
+   * 📖 QUERY - Obtener datos del asistente específico
+   * Se ejecuta cuando cargamos la página
+   */
   const { data: assistant, isLoading } = useQuery({
     queryKey: ["assistant", id],
     queryFn: () => assistantService.getById(id),
   })
 
-  // Initialize rules from assistant data
+  /**
+   * 🔄 Cuando tenemos los datos del asistente,
+   * copiamos sus reglas actuales al textarea
+   */
   useEffect(() => {
     if (assistant) {
       setRules(assistant.rules)
     }
   }, [assistant])
 
-  // Scroll to bottom when new messages arrive
+  /**
+   * 📜 Auto-scroll al chat
+   * Cada vez que hay un mensaje nuevo, scrolleamos abajo
+   */
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
 
-  // Save rules mutation
+  /**
+   * 💾 MUTATION - Guardar las instrucciones de entrenamiento
+   * 
+   * Cuando clickeamos el botón GUARDAR, enviamos las reglas
+   * al backend (mock) que las persiste en la sesión
+   */
   const saveRulesMutation = useMutation({
     mutationFn: (newRules: string) => assistantService.updateRules(id, newRules),
     onSuccess: () => {
+      // Invalida el cache para que React Query refetch
       queryClient.invalidateQueries({ queryKey: ["assistant", id] })
       queryClient.invalidateQueries({ queryKey: ["assistants"] })
       toast.success("Entrenamiento guardado", {
@@ -69,10 +105,25 @@ export default function TrainingPage() {
     },
   })
 
+  /**
+   * 💾 Guardar las reglas cuando clickeamos el botón
+   */
   const handleSaveRules = () => {
     saveRulesMutation.mutate(rules)
   }
 
+  /**
+   * 💬 Enviar un mensaje en el chat
+   * 
+   * Flujo:
+   * 1. El usuario escribe algo y presiona Enter
+   * 2. Agregamos su mensaje al estado global
+   * 3. Mostramos "escribiendo..." en la UI
+   * 4. Esperamos 1-2 segundos aleatoriamente
+   * 5. Generamos una respuesta al azar del array
+   * 6. Agregamos la respuesta al chat
+   * 7. Quitamos el "escribiendo..."
+   */
   const handleSendMessage = async () => {
     if (!messageInput.trim() || isTyping) return
 
@@ -83,13 +134,15 @@ export default function TrainingPage() {
       timestamp: new Date(),
     }
 
+    // Agregamos el mensaje del usuario
     addChatMessage(id, userMessage)
     setMessageInput("")
     setIsTyping(true)
 
-    // Simulate assistant response with 1-2 second delay
-    const delay = 1000 + Math.random() * 1000
+    // Simulamos el delay de la "IA"
+    const delay = 1000 + Math.random() * 1000  // 1-2 segundos
     setTimeout(() => {
+      // Elegimos una respuesta al azar
       const randomResponse = simulatedResponses[Math.floor(Math.random() * simulatedResponses.length)]
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -97,11 +150,15 @@ export default function TrainingPage() {
         content: randomResponse,
         timestamp: new Date(),
       }
+      // Agregamos la respuesta del "asistente"
       addChatMessage(id, assistantMessage)
       setIsTyping(false)
     }, delay)
   }
 
+  /**
+   * ⌨️ Permite enviar con Enter
+   */
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
@@ -109,6 +166,10 @@ export default function TrainingPage() {
     }
   }
 
+  /**
+   * 🧹 Reiniciar la conversación
+   * Limpia todos los mensajes del chat de este asistente
+   */
   const handleResetChat = () => {
     clearChatMessages(id)
     toast.success("Chat reiniciado", {

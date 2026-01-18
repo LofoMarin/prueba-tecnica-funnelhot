@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { QueryProvider } from "@/lib/query-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { Header } from "@/components/header"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -11,15 +13,10 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Funnelhot - Gestión de Asistentes IA",
-  description: "Plataforma para crear, gestionar y entrenar asistentes de inteligencia artificial",
-  generator: "v0.app",
+  description: "Plataforma profesional para crear, gestionar y entrenar asistentes de inteligencia artificial",
   icons: {
-    icon: [
-      { url: "/icon-light-32x32.png", media: "(prefers-color-scheme: light)" },
-      { url: "/icon-dark-32x32.png", media: "(prefers-color-scheme: dark)" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/funnelhot-logo.png",
+    apple: "/funnelhot-logo.png",
   },
 }
 
@@ -36,9 +33,31 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="dark">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme') || 'system';
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="font-sans antialiased">
         <QueryProvider>
+          <Header />
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
           {children}
           <Toaster richColors position="top-right" />
         </QueryProvider>
