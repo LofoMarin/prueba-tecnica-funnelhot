@@ -127,10 +127,5 @@ pnpm start
 - `useMutation`: Para crear, editar, eliminar y guardar instrucciones
 - `queryClient.invalidateQueries`: Para actualizar cache automáticamente
 
-### 3. **Validaciones en Tiempo Real** ✅
-**Implementado en:**
-- **Paso 1 del Modal**: Validación de nombre (min 3 caracteres)
-- **Paso 2 del Modal**: Validación de suma = 100% exacto
-- **Mensajes de Error**: Claros y en español
-
-**Flujo:**
+**Tiempo de Implementación:**
+- Aproximadamente 6 Horas.
