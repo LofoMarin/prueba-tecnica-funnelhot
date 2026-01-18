@@ -1,6 +1,7 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "funnelhot-asistentes-ia",
+  "version": "1.0.0",
+  "description": "Módulo de Gestión de Asistentes IA para Funnelhot",
   "private": true,
   "scripts": {
     "build": "next build",
