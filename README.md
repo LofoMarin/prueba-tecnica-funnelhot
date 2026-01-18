@@ -2,109 +2,135 @@
 
 Aplicación web responsive para crear, listar, editar, eliminar y entrenar asistentes de IA con gestión profesional de estado.
 
+## 🚀 Cómo Ejecutar el Proyecto
+
+### Requisitos Previos
+- **Node.js**: 18+ instalado
+- **pnpm**: Gestor de paquetes (o npm/yarn)
+
+### Instalación y Ejecución
+
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/LofoMarin/prueba-tecnica-funnelhot.git
+cd prueba-tecnica-funnelhot
+```
+
+2. **Instalar dependencias**
+```bash
+pnpm install
+# o si usas npm
+npm install
+```
+
+3. **Ejecutar en desarrollo**
+```bash
+pnpm dev
+# o
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:3000`
+
+4. **Compilar para producción**
+```bash
+pnpm build
+pnpm start
+```
+
 ## 🚀 Características Implementadas
 
 ### ✅ Funcionalidad Principal
-- **Página Principal**: Listado de asistentes en tarjetas con información detallada
-- **Modal 2 Pasos**: Creación y edición de asistentes con validaciones en tiempo real
-- **Página de Entrenamiento**: Configuración de reglas y chat simulado
-- **Gestión de Eliminación**: Confirmación y feedback visual
-- **Estados de Carga**: Loading, error handling y optimistic updates
-- **Tema Oscuro/Claro**: Toggle de tema con persistencia
+- ✅ **Página Principal**: Listado de asistentes en tarjetas con información detallada
+- ✅ **Modal 2 Pasos**: Creación y edición de asistentes con validaciones en tiempo real
+- ✅ **Página de Entrenamiento**: Configuración de reglas y chat simulado
+- ✅ **Gestión de Eliminación**: Confirmación y feedback visual
+- ✅ **Estados de Carga**: Loading, error handling y optimistic updates
+- ✅ **Tema Oscuro/Claro**: Toggle de tema con persistencia
+- ✅ **Logo Funnelhot**: Branding personalizado en el header
+- ✅ **Toasts de Notificación**: Feedback visual con Sonner
 
-### 📋 Secciones Implementadas
+### 📋 Secciones Detalladas
 
 #### 1. Página Principal (`/`)
-- Listado responsive de asistentes en tarjetas
-- Información: Nombre, idioma, tono, estado de audio
-- Gráfico de distribución de respuestas (cortas, medias, largas)
-- Menú de acciones (Editar, Eliminar, Entrenar)
-- Estado vacío con CTA
-- Botón flotante "Crear Asistente"
-- Skeletons durante carga
+- Listado responsive de asistentes en tarjetas (3 columnas en desktop, 2 en tablet, 1 en mobile)
+- Información mostrada: Nombre, idioma, tono, estado de audio
+- **Gráfico Visual**: Barra de distribución de respuestas (cortas 🔵, medias 🟠, largas 🟢)
+- Menú desplegable con acciones (Editar, Eliminar)
+- Botón "Entrenar" que lleva a la página de entrenamiento
+- Estado vacío elegante cuando no hay asistentes
+- Skeletons de carga mientras se obtienen datos
+- Animaciones suaves en transiciones
 
-#### 2. Modal de Creación/Edición
+#### 2. Modal de Creación/Edición (2 Pasos)
 **Paso 1: Datos Básicos**
-- Nombre (validado: 3+ caracteres)
-- Idioma (Español, Inglés, Portugués)
-- Tono (Formal, Casual, Profesional, Amigable)
-- Validaciones en tiempo real con mensajes claros
+- ✅ Campo Nombre (validación: mínimo 3 caracteres, requerido)
+- ✅ Select Idioma (Español, Inglés, Portugués)
+- ✅ Select Tono (Formal, Casual, Profesional, Amigable)
+- ✅ Indicador visual mostrando "Paso 1/2"
+- ✅ Botón "Siguiente" con validación
 
-**Paso 2: Configuración**
-- Sliders para porcentaje de respuestas
-- Validación: suma debe ser 100%
-- Checkbox para audio
-- Indicador visual del paso actual
-- Navegación: Atrás/Guardar
+**Paso 2: Configuración de Respuestas**
+- ✅ 3 Sliders para ajustar porcentajes (Cortas, Medias, Largas)
+- ✅ **Validación crítica**: suma debe ser exactamente 100%
+- ✅ Checkbox para habilitar/deshabilitar audio
+- ✅ Indicador visual mostrando "Paso 2/2"
+- ✅ Botones "Atrás" y "Guardar"
+- ✅ Manejo de estados: loading, error, éxito
 
 #### 3. Página de Entrenamiento (`/asistant/[id]`)
-**Sección de Entrenamiento**
-- Área de texto para prompts/instrucciones
-- Botón "Guardar" con estado de carga
-- Toasts de éxito/error
-- Persistencia en sesión
+**Sección Izquierda: 📝 Entrenamiento**
+- Header mostrando datos del asistente (nombre, idioma, tono, audio)
+- Textarea grande para escribir instrucciones/prompts
+- Botón "GUARDAR" con estado de carga
+- Toasts de feedback (éxito/error)
+- **Persistencia**: Los datos se guardan en sesión
 
-**Chat Simulado**
-- Interfaz limpia con mensajes diferenciados
-- Delay 1-2 segundos en respuestas
-- Respuestas aleatorias del JSON
-- Indicador "escribiendo"
-- Input para mensajes
-- Botón "Reiniciar" conversación
+**Sección Derecha: 💬 Chat Simulado**
+- Interfaz de chat limpia y moderna
+- Mensajes del usuario alineados a la derecha (fondo púrpura)
+- Mensajes del asistente alineados a la izquierda (fondo gris)
+- **Indicador "escribiendo"** con animación de puntos
+- Delay realista de 1-2 segundos antes de responder
+- Respuestas aleatorias del array predefinido
+- Input para escribir mensajes
+- Botón "Enviar" (también con Enter)
+- Botón "Reiniciar" para limpiar el chat
+- Auto-scroll al mensaje más nuevo
 
-## 🛠 Stack Técnico
+## 🛠 Decisiones Técnicas
 
-### Requisitos
-- **Node.js**: 18+
-- **Next.js**: 14+ (App Router)
-- **TypeScript**: Tipado completo
+### 1. **Zustand para Estado Global** ✅
+**Por qué:**
+- Más ligero que Context API
+- No requiere Provider wrapper (aunque lo usamos para mejor práctica)
+- Excelente performance incluso con múltiples renders
+- Sintaxis simple y intuitiva
+- Fácil de debuggear
 
-### Dependencias Principales
-```json
-{
-  "next": "^14.0.0",
-  "react": "^18.2.0",
-  "@tanstack/react-query": "^5.0.0",
-  "zustand": "^4.4.0",
-  "react-hook-form": "^7.48.0",
-  "sonner": "^1.2.0",
-  "lucide-react": "^0.263.0",
-  "@radix-ui/[components]": "latest"
-}
-```
+**Qué gestiona:**
+- Lista de asistentes
+- Asistente seleccionado
+- Estado del modal (abierto/cerrado)
+- Mensajes del chat por asistente
 
-## 📁 Estructura de Carpetas
-```markdown
-/src
-  /app
-    /asistant
-      /[id]
-        page.tsx
-    /components
-      ...
-    /hooks
-      ...
-    /lib
-      ...
-    /pages
-      _app.tsx
-      index.tsx
-    /public
-      ...
-    /styles
-      globals.css
-  /tests
-    ...
-```
+### 2. **React Query (TanStack Query) para Operaciones Asíncronas** ✅
+**Por qué:**
+- Manejo automático de loading, error y success states
+- Caching inteligente de datos
+- Invalidación automática de queries
+- Reintentos automáticos en caso de error
+- DevTools para debugging
 
-## 📚 Documentación Adicional
+**Qué usa:**
+- `useQuery`: Para obtener lista de asistentes y asistente específico
+- `useMutation`: Para crear, editar, eliminar y guardar instrucciones
+- `queryClient.invalidateQueries`: Para actualizar cache automáticamente
 
-- **Next.js**: [Documentación Oficial](https://nextjs.org/docs)
-- **React**: [Documentación Oficial](https://reactjs.org/docs/getting-started.html)
-- **TypeScript**: [Documentación Oficial](https://www.typescriptlang.org/docs/)
-- **TanStack Query**: [Documentación Oficial](https://tanstack.com/query/latest/docs/overview)
-- **Zustand**: [Documentación Oficial](https://github.com/pmndrs/zustand)
-- **React Hook Form**: [Documentación Oficial](https://react-hook-form.com/get-started)
-- **Sonner**: [Documentación Oficial](https://sonner.dev/docs)
-- **Lucide React**: [Documentación Oficial](https://lucide.dev/docs/react)
-- **Radix UI**: [Documentación Oficial](https://www.radix-ui.com/docs/primitives/overview/introduction)
+### 3. **Validaciones en Tiempo Real** ✅
+**Implementado en:**
+- **Paso 1 del Modal**: Validación de nombre (min 3 caracteres)
+- **Paso 2 del Modal**: Validación de suma = 100% exacto
+- **Mensajes de Error**: Claros y en español
+
+**Flujo:**
